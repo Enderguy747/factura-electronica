@@ -1,8 +1,10 @@
+import { redirect } from "next/navigation"
 
-export default function Home() {
+function Home() {
+
   return (
-   <>
-   <h1>helloworld</h1>
-   </>
-  );
+  redirect("/dashboard")
+  )
 }
+
+export default Home
