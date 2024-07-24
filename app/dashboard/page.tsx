@@ -1,19 +1,11 @@
 import Image from "next/image"
 import Link from "next/link"
 import {
-  File,
-  Home,
-  LineChart,
-  ListFilter,
+ 
   MoreHorizontal,
-  Package,
-  Package2,
-  PanelLeft,
+
   PlusCircle,
-  Search,
-  Settings,
-  ShoppingCart,
-  Users2,
+
 
 } from "lucide-react"
 
@@ -69,16 +61,16 @@ import {
 
 export default function Dashboard() {
   return (
-    <>
+  
 
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+      <div >
         
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           <Tabs defaultValue="all">
             <div className="flex items-center">
       
               <div className="ml-auto flex items-center gap-2">
-                <Link href={"/facturas"}>
+                <Link href={"/dashboard/facturas/crear"}>
                 <Button size="sm" className="h-8 gap-1">
                   <PlusCircle className="h-3.5 w-3.5" />
                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -405,6 +397,6 @@ export default function Dashboard() {
         </main>
       </div >
 
-    </>
+   
   )
 }
