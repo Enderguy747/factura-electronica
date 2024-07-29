@@ -51,8 +51,8 @@ export const FormSchema = z.object({
 
 
     cabys: z.string().
-        min(1, { message: "Debe Selecionar el codigo CABYS" }).
-        transform((value) => Number(value) || 0),
+        min(1, { message: "Debe Selecionar el codigo CABYS" })
+
 
 
 })
@@ -73,6 +73,30 @@ export const facturaElectronicaDefaulValues = {
     tipoDeVenta: "01",
     plazoPago: undefined,
     codImpuesto: "",
-    cabys: undefined,
+    cabys: "",
 
 }
+
+
+export const cabys = [
+    {
+        id: 2933001010000,
+        description: "Zapato de Cuero Hombre"
+    },
+    {
+        id: 2933002010000,
+        description: "Zapato de Cuero Mujer"
+    },
+    {
+        id: 2932001010000,
+        description: "Tenis Hombre"
+    },
+    {
+        id: 2932002010000,
+        description: "Tenis Mujer"
+    },
+    {
+        id: 2820203029900,
+        description: "Camisas"
+    },
+]

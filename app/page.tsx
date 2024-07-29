@@ -1,13 +1,12 @@
-import { InputForm } from "@/components/facturasForm"
+import { FacturasForm } from "@/components/facturasForm"
 import { redirect } from "next/navigation"
 
 
   function Home() {
 
     return (
-      <InputForm />
+      <FacturasForm />
     )
-    //redirect("/dashboard")
   }
 
 export default Home
