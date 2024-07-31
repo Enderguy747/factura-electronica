@@ -2,6 +2,7 @@
 
 import { create } from "xmlbuilder2"
 import { getFormattedDate } from "@/lib/utils";
+import { sendXML, signXML, writeXML } from "@/lib/xmlActions";
 type TFormData = {
 
     nombre: string;
@@ -19,23 +20,7 @@ type TFormData = {
     plazoPago?: string | undefined;
     tipoDeVenta?: string | undefined;
 }
-/*
-const transformData = (factura: TFormData) => {
-    const facturaArray: Array<{ [key: string]: any }> = [];
 
-    for (const key in factura) {
-
-        if (factura.hasOwnProperty(key)) {
-            const obj: { [key: string]: any } = {};
-
-            obj[key as keyof TFormData] = factura[key as keyof TFormData];
-
-            facturaArray.push(obj);
-        }
-    }
-    return facturaArray
-}
-    */
 
 const localdb = window.localStorage
 localdb.setItem('contador', "0")
@@ -68,8 +53,10 @@ export async function generateXML(formData: TFormData) {
     const claveComercio = 159874638
 
     const consecutivo = establecimiento + terminal + tipoComprobante + numeracion
-
     const clave = `${codPais}0${dia}0${mes}${anio}0${ced}${consecutivo}1${claveComercio}`
+    const subtotal = (formData.precioUnitario * formData.cantidadArticulo)
+    const montoImpuesto = formData.codImpuesto === "01" ? subtotal * 0.13 : subtotal
+    const montoTotal = (formData.precioUnitario * formData.cantidadArticulo)
 
     const facturaXML = {
         FacturaElectronica: {
@@ -96,22 +83,70 @@ export async function generateXML(formData: TFormData) {
                     CodigoPais: 506,
                     NumTelefono: 83760811,
                 },
-                CorreoElectronico:"jo.sed982705@gmail.com"
+                CorreoElectronico: "jo.sed982705@gmail.com"
             },
-            Receptor:{
-                Nombre:formData.nombre,
-                Identificacion:formData.tipoCedula,
-                Numero:formData.cedula,
-                Telefono:{
-                    CodigoPais:506,
-                    NumTelefono:formData.telefono,
+            Receptor: {
+                Nombre: formData.nombre,
+                Identificacion: {
+                    Tipo: formData.tipoCedula,
+                    Numero: formData.cedula
+                },
+                Telefono: {
+                    CodigoPais: 506,
+                    NumTelefono: formData.telefono,
+                },
+                CorreoElectronico: formData.correo,
+            },
+
+            CondicionVenta: formData.tipoDeVenta,
+            MedioPago: formData.metodoPago,
+
+            DetalleServicio: {
+                LineaDetalle: {
+                    NumeroLinea: 1,
+                    CodigoComercial: {
+                        Tipo: "04",
+                        Codigo: formData.cabys,
+                    },
+                    Cantidad: formData.cantidadArticulo,
+                    UnidadMedida: "Unid",
+                    Detalle: formData.detalleArticulo,
+                    PrecioUnitario: formData.precioUnitario,
+                    MontoTotal: montoTotal,
+                    SubTotal: subtotal,
+                    Impuesto: {
+                        Codigo: formData.codImpuesto,
+                        CodigoTarifa: formData.codImpuesto === "01" ? "08" : "01",
+                        Tarifa: formData.codImpuesto === "01" ? "13.0000" : "0.0000",
+                        Monto: montoImpuesto,
+                    },
+                    ImpuestoNeto: 0.0000,
+                    MontoTotalLinea: montoTotal + montoImpuesto
                 }
+            },
+            ResumenFactura: {
+                TotalServGravados: 0.0000,
+                TotalServExentos: 0.0000,
+                TotalMercanciasGravadas: subtotal,
+                TotalMercanciasExentas: 0.0000,
+                TotalGravado: subtotal,
+                TotalExento: 0.0000,
+                TotalVenta: subtotal,
+                TotalDescuentos: 0.0000,
+                TotalVentaNeta: subtotal,
+                TotalImpuesto: montoImpuesto,
+                TotalComprobante: montoTotal + montoImpuesto,
             }
+
         }
     };
 
     const doc = create(facturaXML);
     const xml = doc.end({ prettyPrint: true });
+
+    writeXML(xml)
+    signXML()
+    sendXML()
     console.log(xml);
 }
 
